@@ -3,23 +3,25 @@
 import { Button } from '@wepl/ui/Button';
 import { useRouter } from 'next/navigation';
 import { signIn, signOut, useSession } from 'next-auth/react';
+import { useQuery } from '@tanstack/react-query';
+import { axiosInstance } from '@/src/shared/config/axios';
 
 export default function LoginPage(): JSX.Element {
-  const router = useRouter();
-  const session = useSession();
+  const session = useSession() as any;
 
-  console.log(session);
-  const { status = 'loading' } = session;
+  //Todo: login -> accessToken -> header에 토큰 집어넣기 -> 유저정보 받아오기 -> 유저정보 웹스토리지에 저장 -> 유저정보 유무에 따른 routing 처리
+
   const handleKakaoBtn = async () => {
-    if (status === 'unauthenticated') {
+    try {
       await signIn('kakao', {
-        redirect: true,
-        callbackUrl: '/on-boarding',
+        redirect: false,
       });
-    } else {
-      router.push('/home');
+      console.log(session.data);
+    } catch {
+      console.log('ERROR');
     }
   };
+
   const handleSignOut = async () => {
     await signOut({ redirect: true, callbackUrl: '/' });
   };
